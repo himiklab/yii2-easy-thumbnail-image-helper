@@ -11,6 +11,7 @@ use Yii;
 use yii\helpers\Html;
 use yii\helpers\FileHelper;
 use yii\imagine\Image;
+use Imagine\Image\Box;
 use Imagine\Image\ManipulatorInterface;
 
 /**
@@ -18,7 +19,7 @@ use Imagine\Image\ManipulatorInterface;
  * @author HimikLab
  * @package himiklab\thumbnail
  */
-class EasyThumbnailImage extends Image
+class EasyThumbnailImage
 {
     const THUMBNAIL_OUTBOUND = ManipulatorInterface::THUMBNAIL_OUTBOUND;
     const THUMBNAIL_INSET = ManipulatorInterface::THUMBNAIL_INSET;
@@ -27,9 +28,8 @@ class EasyThumbnailImage extends Image
     public static $cacheAlias = 'assets/thumbnails';
 
     /**
-     * Creates a thumbnail image. The function differs from `\Imagine\Image\ImageInterface::thumbnail()` function that
-     * it keeps the aspect ratio of the image. And it differs from `\yii\imagine\Image::thumbnail()` function
-     * that it use the cache.
+     * Creates and caches the image thumbnail and returns ImageInterface.
+     *
      * @param string $filename the image file path or path alias
      * @param integer $width the width in pixels to create the thumbnail
      * @param integer $height the height in pixels to create the thumbnail
@@ -47,11 +47,12 @@ class EasyThumbnailImage extends Image
      */
     public static function thumbnail($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND)
     {
-        return static::getImagine()->open(self::thumbnailFile($filename, $width, $height, $mode));
+        return Image::getImagine()->open(self::thumbnailFile($filename, $width, $height, $mode));
     }
 
     /**
-     * Return path from thumbnail file.
+     * Creates and caches the image thumbnail and returns full path from thumbnail file.
+     *
      * @param string $filename
      * @param integer $width
      * @param integer $height
@@ -79,13 +80,17 @@ class EasyThumbnailImage extends Image
             mkdir($thumbnailFilePath, 0755, true);
         }
 
-        $image = parent::thumbnail($filename, $width, $height, $mode);
+        $box = new Box($width, $height);
+        $image = Image::getImagine()->open($filename);
+        $image = $image->thumbnail($box, $mode);
+
         $image->save($thumbnailFile);
         return $thumbnailFile;
     }
 
     /**
-     * Return URL from thumbnail file.
+     * Creates and caches the image thumbnail and returns URL from thumbnail file.
+     *
      * @param string $filename
      * @param integer $width
      * @param integer $height
@@ -105,7 +110,8 @@ class EasyThumbnailImage extends Image
     }
 
     /**
-     * Creates a thumbnail image <img> tag.
+     * Creates and caches the image thumbnail and returns <img> tag.
+     *
      * @param string $filename
      * @param integer $width
      * @param integer $height
@@ -124,9 +130,6 @@ class EasyThumbnailImage extends Image
             Yii::warning("{$e->getCode()}\n{$e->getMessage()}\n{$e->getFile()}");
             return 'Error ' . $e->getCode();
         }
-
-        $options['width'] = $width;
-        $options['height'] = $height;
 
         return Html::img(
             $thumbnailFileUrl,

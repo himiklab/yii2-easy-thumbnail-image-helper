@@ -22,13 +22,11 @@ to the require section of your application's `composer.json` file.
 
 Usage
 -----
-
 For example:
 
 ```php
 use himiklab\thumbnail\EasyThumbnailImage;
 
-EasyThumbnailImage::$driver = [EasyThumbnailImage::DRIVER_GD2];
 EasyThumbnailImage::$cacheAlias = 'assets/thumbnails';
 
 echo EasyThumbnailImage::thumbnailImg(
