@@ -24,8 +24,11 @@ class EasyThumbnailImage
     const THUMBNAIL_OUTBOUND = ManipulatorInterface::THUMBNAIL_OUTBOUND;
     const THUMBNAIL_INSET = ManipulatorInterface::THUMBNAIL_INSET;
 
-    /** @var string path alias relative with @web where the cache files are kept */
+    /** @var string $cacheAlias path alias relative with @web where the cache files are kept */
     public static $cacheAlias = 'assets/thumbnails';
+
+    /** @var int $cacheExpire */
+    public static $cacheExpire = 0;
 
     /**
      * Creates and caches the image thumbnail and returns ImageInterface.
@@ -74,7 +77,11 @@ class EasyThumbnailImage
         $thumbnailFile = $thumbnailFilePath . DIRECTORY_SEPARATOR . $thumbnailFileName . $thumbnailFileExt;
 
         if (file_exists($thumbnailFile)) {
-            return $thumbnailFile;
+            if (self::$cacheExpire !== 0 && (time() - filemtime($thumbnailFile)) > self::$cacheExpire) {
+                unlink($thumbnailFile);
+            } else {
+                return $thumbnailFile;
+            }
         }
         if (!is_dir($thumbnailFilePath)) {
             mkdir($thumbnailFilePath, 0755, true);
