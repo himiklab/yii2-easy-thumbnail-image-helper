@@ -143,4 +143,26 @@ class EasyThumbnailImage
             $options
         );
     }
+
+    /**
+     * Clear cache directory.
+     *
+     * @return bool
+     */
+    public static function clearCache()
+    {
+        $cacheDir = Yii::getAlias('@webroot/' . self::$cacheAlias);
+        self::removeDir($cacheDir);
+        return @mkdir($cacheDir, 0755, true);
+    }
+
+    protected static function removeDir($path)
+    {
+        if (is_file($path)) {
+            @unlink($path);
+        } else {
+            array_map('self::removeDir', glob($path . DIRECTORY_SEPARATOR . '*'));
+            @rmdir($path);
+        }
+    }
 }
