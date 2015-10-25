@@ -56,3 +56,21 @@ echo EasyThumbnailImage::thumbnailImg(
 ```
 
 For other functions please see the source code.
+
+If you want to handle errors that appear while converting to thumbnail by yourself, please make your own class and inherit it from EasyThumbnailImage. In your class replace only protected method errorHandler. For example
+
+```php
+class ThumbHelper extends \himiklab\thumbnail\EasyThumbnailImage
+{
+
+    protected static function errorHandler($error, $filename)
+    {
+        if ($error instanceof \himiklab\thumbnail\FileNotFoundException) {
+            return \yii\helpers\Html::img('@web/images/notfound.png');
+        } else {
+            $filename = basename($filename);
+            return \yii\helpers\Html::a($filename,"@web/files/$filename");
+        }
+    }
+} 
+```

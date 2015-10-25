@@ -131,11 +131,8 @@ class EasyThumbnailImage
         $filename = FileHelper::normalizePath(Yii::getAlias($filename));
         try {
             $thumbnailFileUrl = self::thumbnailFileUrl($filename, $width, $height, $mode);
-        } catch (FileNotFoundException $e) {
-            return 'File doesn\'t exist';
         } catch (\Exception $e) {
-            Yii::warning("{$e->getCode()}\n{$e->getMessage()}\n{$e->getFile()}");
-            return 'Error ' . $e->getCode();
+            return static::errorHandler($e, $filename);
         }
 
         return Html::img(
@@ -165,4 +162,15 @@ class EasyThumbnailImage
             @rmdir($path);
         }
     }
+
+    protected static function errorHandler($error, $filename)
+    {
+        if ($error instanceof FileNotFoundException) {
+            return 'File doesn\'t exist';
+        } else {
+            Yii::warning("{$error->getCode()}\n{$error->getMessage()}\n{$error->getFile()}");
+            return 'Error ' . $error->getCode();
+        }
+    }
+
 }
