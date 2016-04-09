@@ -1,18 +1,20 @@
 {
   "name": "as-milano/yii2-easy-thumbnail-image-helper",
   "description": "Yii2 helper for creating and caching thumbnails on real time",
-  "keywords": ["yii2", "thumbnail", "image", "helper"],
   "type": "yii2-extension",
-  "license": "MIT",
+  "keywords": ["yii2", "thumbnail", "image", "helper"],
+  "license": "BSD-3-Clause",
   "authors": [
     {
-	  "name": "HimikLab",
-      "homepage": "https://github.com/himiklab/"
+	  "name": "NecroMan",
+      "email": "nm666@bk.ru",
+      "homepage": "http://as-milano.ru/"
     }
   ],
+  "minimum-stability": "dev",
   "require": {
-    "yiisoft/yii2": "*",
-    "yiisoft/yii2-imagine": "*"
+    "yiisoft/yii2": "~2.0",
+    "yiisoft/yii2-imagine": "~2.0"
   },
   "autoload": {
     "psr-4": {

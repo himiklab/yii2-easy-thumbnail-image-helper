@@ -1,18 +1,12 @@
 <?php
-/**
- * @link https://github.com/himiklab/yii2-easy-thumbnail-image-helper
- * @copyright Copyright (c) 2014 HimikLab
- * @license http://opensource.org/licenses/MIT MIT
- */
-
 namespace milano\thumbnail;
 
-use Yii;
-use yii\helpers\Html;
-use yii\helpers\FileHelper;
-use yii\imagine\Image;
 use Imagine\Image\Box;
 use Imagine\Image\ManipulatorInterface;
+use Yii;
+use yii\helpers\FileHelper;
+use yii\helpers\Html;
+use yii\imagine\Image;
 
 /**
  * Yii2 helper for creating and caching thumbnails on real time
