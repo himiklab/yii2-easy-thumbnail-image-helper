@@ -1,6 +1,7 @@
 Easy Thumbnail Image Helper for Yii2
 ========================
 
+**FORK**
 Yii2 helper for creating and caching thumbnails on real time.
 
 Installation
