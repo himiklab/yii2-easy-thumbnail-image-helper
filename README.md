@@ -1,7 +1,9 @@
 Easy Thumbnail Image Helper for Yii2
 ========================
-
 Yii2 helper for creating and caching thumbnails on real time.
+
+Fork of [another extension](https://github.com/himiklab/yii2-easy-thumbnail-image-helper) with some additional features:
+* Ability to set exact size of created thumbnail even if original image is smaller than thumbnail.
 
 Installation
 ------------

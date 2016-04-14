@@ -1,18 +1,12 @@
 <?php
-/**
- * @link https://github.com/himiklab/yii2-easy-thumbnail-image-helper
- * @copyright Copyright (c) 2014 HimikLab
- * @license http://opensource.org/licenses/MIT MIT
- */
+namespace milano\thumbnail;
 
-namespace himiklab\thumbnail;
-
-use Yii;
-use yii\helpers\Html;
-use yii\helpers\FileHelper;
-use yii\imagine\Image;
 use Imagine\Image\Box;
 use Imagine\Image\ManipulatorInterface;
+use Yii;
+use yii\helpers\FileHelper;
+use yii\helpers\Html;
+use yii\imagine\Image;
 
 /**
  * Yii2 helper for creating and caching thumbnails on real time
@@ -23,6 +17,7 @@ class EasyThumbnailImage
 {
     const THUMBNAIL_OUTBOUND = ManipulatorInterface::THUMBNAIL_OUTBOUND;
     const THUMBNAIL_INSET = ManipulatorInterface::THUMBNAIL_INSET;
+    const THUMBNAIL_EXACT = 'exact';
 
     /** @var string $cacheAlias path alias relative with @web where the cache files are kept */
     public static $cacheAlias = 'assets/thumbnails';
@@ -89,6 +84,22 @@ class EasyThumbnailImage
 
         $box = new Box($width, $height);
         $image = Image::getImagine()->open($filename);
+
+        if ($mode === self::THUMBNAIL_EXACT) {
+            $imageSize = $image->getSize();
+
+            if ($imageSize->getWidth() < $box->getWidth() || $imageSize->getHeight() < $box->getHeight()) {
+                $ratio = max(
+                    $box->getWidth() / $imageSize->getWidth(),
+                    $box->getHeight() / $imageSize->getHeight()
+                );
+
+                $image->resize($imageSize->scale($ratio));
+            }
+
+            $mode = self::THUMBNAIL_OUTBOUND;
+        }
+
         $image = $image->thumbnail($box, $mode);
 
         $image->save($thumbnailFile);
