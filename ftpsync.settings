@@ -1,0 +1,86 @@
+{
+	// HELP / INFO moved to bottom
+	// Remove "//" to uncomment settings directive
+
+	"default": {
+
+		"host": "ftp.example.com",
+		"username": "your_login",  // or null for anonymous login
+		"password": "your_password",
+		"path": "/www/kartochki/vendor/himiklab/yii2-easy-thumbnail-image-helper",
+
+		"upload_on_save": true, // set *false* if you do not want to upload on save!
+
+		// "port": 21,
+		// "tls": false,
+		// "timeout": 30, // [seconds]
+
+		// "passive": true,
+		// "download_on_open": false,
+		// "overwrite_newer_prevention": true,
+		// "default_folder_permissions": "755",
+		// "default_upload_permissions": null, // null = no action taken
+		// "time_offset": 0, // [seconds]
+		// "always_sync_local_permissions": true,
+
+		// Value "auto" = use UTF-8 if availible (FEAT: UTF8), otherwise use local
+		// "encoding": "auto",
+
+		// Trade small performance impact for more stable and secure transfer (old file is intact until the download is finished)
+		// "use_tempfile": true,
+
+		// Regular expression, recommending using \b in general and /.../ for folders to avoid matching substrings
+		// "ignore": "",
+
+		// Can be used for increase of performance or to allow build scripts to finish
+		// "upload_delay": 0, // [seconds]
+
+		// Only if the server has MFMT extension installed
+		// "set_remote_lastmodified": true,
+
+		// Chmod value for files newly downloaded by FTPSync
+		//   "auto" = same as on server
+		//   null = no action taken
+		//   "0644" = example for direct value
+		// "default_local_permissions": "auto",
+
+		// List of lists with pathnames and filenames to folders to be watched for change in between delay (upload_delay)
+		//   example: after_save_watch: [ [ "code/assets/css", "*.css" ], [ "code/assets/", "*.jpg, *.png, *.gif" ] ]
+		//   used only in conjunction with upload_on_save and upload_delay **
+		// For more info see https://github.com/NoxArt/SublimeText2-FTPSync/wiki/Why-and-how-to-use-afterwatch
+		// "after_save_watch": [],
+
+	}
+
+	// ------ INFO ----------------------------------------------------------------------
+
+	// Index page
+	// --- https://github.com/NoxArt/SublimeText2-FTPSync/
+
+	// For settings description see:
+	// --- https://github.com/NoxArt/SublimeText2-FTPSync/wiki/All-settings
+
+	// For more info see:
+	// --- https://github.com/NoxArt/SublimeText2-FTPSync/wiki/_pages
+
+	// Want to ask? Report a bug?
+	// --- Hit: https://github.com/NoxArt/SublimeText2-FTPSync/issues/new
+
+
+	// ** Commas **
+
+	// from now on extra commas are allowed and recommended
+
+	// ** Comments **
+
+	// The "//" are so called "comments", all text after it is ignored,
+	// they are used for notes or deactivating an entry
+
+	// Non-basic settings are deactivated and default options specified in the global settings file,
+	// that is $packages$/FTPSync/ftpsync.sublime-settings (where $packages$ is a path where Sublime
+	// keeps packages in your Operating System) accessible via Preferences > Package Settings > FTPSync
+	// Use Settings - User to override the global defaults
+
+	// More info about Sublime Text 2 settings on http://www.sublimetext.com/docs/2/settings.html
+
+}
