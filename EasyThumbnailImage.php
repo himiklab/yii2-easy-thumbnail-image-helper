@@ -95,7 +95,7 @@ class EasyThumbnailImage
         $image = $image->thumbnail($box, $mode);
         
         $options = [
-            'quality'=> $quality === null ? self::QUALITY : $quality;
+            'quality'=> $quality === null ? self::QUALITY : $quality
         ]; 
 
         $image->save($thumbnailFile,$options);
