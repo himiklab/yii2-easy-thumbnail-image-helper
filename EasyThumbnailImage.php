@@ -90,15 +90,13 @@ class EasyThumbnailImage
 
         $box = new Box($width, $height);
         $image = Image::getImagine()->open($filename);
-
-        
         $image = $image->thumbnail($box, $mode);
         
         $options = [
             'quality'=> $quality === null ? self::QUALITY : $quality
         ]; 
 
-        $image->save($thumbnailFile,$options);
+        $image->save($thumbnailFile, $options);
         return $thumbnailFile;
     }
 
