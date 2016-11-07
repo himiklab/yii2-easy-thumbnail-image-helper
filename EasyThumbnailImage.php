@@ -23,6 +23,7 @@ class EasyThumbnailImage
 {
     const THUMBNAIL_OUTBOUND = ManipulatorInterface::THUMBNAIL_OUTBOUND;
     const THUMBNAIL_INSET = ManipulatorInterface::THUMBNAIL_INSET;
+    const QUALITY = 50;
 
     /** @var string $cacheAlias path alias relative with @web where the cache files are kept */
     public static $cacheAlias = 'assets/thumbnails';
@@ -48,9 +49,9 @@ class EasyThumbnailImage
      * the exact $width and $height specified
      * @return \Imagine\Image\ImageInterface
      */
-    public static function thumbnail($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND)
+    public static function thumbnail($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $quality = null)
     {
-        return Image::getImagine()->open(self::thumbnailFile($filename, $width, $height, $mode));
+        return Image::getImagine()->open(self::thumbnailFile($filename, $width, $height, $mode, $quality));
     }
 
     /**
@@ -63,7 +64,7 @@ class EasyThumbnailImage
      * @return string
      * @throws FileNotFoundException
      */
-    public static function thumbnailFile($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND)
+    public static function thumbnailFile($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $quality = null)
     {
         $filename = FileHelper::normalizePath(Yii::getAlias($filename));
         if (!is_file($filename)) {
@@ -90,8 +91,12 @@ class EasyThumbnailImage
         $box = new Box($width, $height);
         $image = Image::getImagine()->open($filename);
         $image = $image->thumbnail($box, $mode);
+        
+        $options = [
+            'quality'=> $quality === null ? self::QUALITY : $quality
+        ]; 
 
-        $image->save($thumbnailFile);
+        $image->save($thumbnailFile, $options);
         return $thumbnailFile;
     }
 
@@ -104,11 +109,11 @@ class EasyThumbnailImage
      * @param string $mode
      * @return string
      */
-    public static function thumbnailFileUrl($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND)
+    public static function thumbnailFileUrl($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $quality = null)
     {
         $filename = FileHelper::normalizePath(Yii::getAlias($filename));
         $cacheUrl = Yii::getAlias('@web/' . self::$cacheAlias);
-        $thumbnailFilePath = self::thumbnailFile($filename, $width, $height, $mode);
+        $thumbnailFilePath = self::thumbnailFile($filename, $width, $height, $mode, $quality);
 
         preg_match('#[^\\' . DIRECTORY_SEPARATOR . ']+$#', $thumbnailFilePath, $matches);
         $fileName = $matches[0];
@@ -126,11 +131,11 @@ class EasyThumbnailImage
      * @param array $options options similarly with \yii\helpers\Html::img()
      * @return string
      */
-    public static function thumbnailImg($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $options = [])
+    public static function thumbnailImg($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $options = [], $quality = null)
     {
         $filename = FileHelper::normalizePath(Yii::getAlias($filename));
         try {
-            $thumbnailFileUrl = self::thumbnailFileUrl($filename, $width, $height, $mode);
+            $thumbnailFileUrl = self::thumbnailFileUrl($filename, $width, $height, $mode, $quality);
         } catch (\Exception $e) {
             return static::errorHandler($e, $filename);
         }
