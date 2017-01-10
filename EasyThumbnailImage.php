@@ -7,12 +7,12 @@
 
 namespace himiklab\thumbnail;
 
-use Yii;
-use yii\helpers\Html;
-use yii\helpers\FileHelper;
-use yii\imagine\Image;
 use Imagine\Image\Box;
 use Imagine\Image\ManipulatorInterface;
+use Yii;
+use yii\helpers\FileHelper;
+use yii\helpers\Html;
+use yii\imagine\Image;
 
 /**
  * Yii2 helper for creating and caching thumbnails on real time
@@ -24,6 +24,7 @@ class EasyThumbnailImage
     const THUMBNAIL_OUTBOUND = ManipulatorInterface::THUMBNAIL_OUTBOUND;
     const THUMBNAIL_INSET = ManipulatorInterface::THUMBNAIL_INSET;
     const QUALITY = 50;
+    const MKDIR_MODE = 0755;
 
     /** @var string $cacheAlias path alias relative with @web where the cache files are kept */
     public static $cacheAlias = 'assets/thumbnails';
@@ -38,6 +39,7 @@ class EasyThumbnailImage
      * @param integer $width the width in pixels to create the thumbnail
      * @param integer $height the height in pixels to create the thumbnail
      * @param string $mode self::THUMBNAIL_INSET, the original image
+     * @param integer $quality
      * is scaled down so it is fully contained within the thumbnail dimensions.
      * The specified $width and $height (supplied via $size) will be considered
      * maximum limits. Unless the given dimensions are equal to the original image’s
@@ -47,7 +49,11 @@ class EasyThumbnailImage
      * corresponding side in the original image. Any excess outside of the scaled
      * thumbnail’s area will be cropped, and the returned thumbnail will have
      * the exact $width and $height specified
+     * @throws \Imagine\Exception\RuntimeException
+     * @throws \Imagine\Exception\InvalidArgumentException
+     * @throws FileNotFoundException
      * @return \Imagine\Image\ImageInterface
+     * @throws \yii\base\InvalidParamException
      */
     public static function thumbnail($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $quality = null)
     {
@@ -57,12 +63,16 @@ class EasyThumbnailImage
     /**
      * Creates and caches the image thumbnail and returns full path from thumbnail file.
      *
-     * @param string $filename
-     * @param integer $width
-     * @param integer $height
-     * @param string $mode
+     * @param string $filename the image file path or path alias
+     * @param integer $width the width in pixels to create the thumbnail
+     * @param integer $height the height in pixels to create the thumbnail
+     * @param string $mode self::THUMBNAIL_INSET, the original image
+     * @param integer $quality
      * @return string
      * @throws FileNotFoundException
+     * @throws \Imagine\Exception\InvalidArgumentException
+     * @throws \Imagine\Exception\RuntimeException
+     * @throws \yii\base\InvalidParamException
      */
     public static function thumbnailFile($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $quality = null)
     {
@@ -85,16 +95,16 @@ class EasyThumbnailImage
             }
         }
         if (!is_dir($thumbnailFilePath)) {
-            mkdir($thumbnailFilePath, 0755, true);
+            mkdir($thumbnailFilePath, self::MKDIR_MODE, true);
         }
 
         $box = new Box($width, $height);
         $image = Image::getImagine()->open($filename);
         $image = $image->thumbnail($box, $mode);
-        
+
         $options = [
-            'quality'=> $quality === null ? self::QUALITY : $quality
-        ]; 
+            'quality' => $quality === null ? self::QUALITY : $quality
+        ];
 
         $image->save($thumbnailFile, $options);
         return $thumbnailFile;
@@ -103,11 +113,16 @@ class EasyThumbnailImage
     /**
      * Creates and caches the image thumbnail and returns URL from thumbnail file.
      *
-     * @param string $filename
-     * @param integer $width
-     * @param integer $height
-     * @param string $mode
+     * @param string $filename the image file path or path alias
+     * @param integer $width the width in pixels to create the thumbnail
+     * @param integer $height the height in pixels to create the thumbnail
+     * @param string $mode self::THUMBNAIL_INSET, the original image
+     * @param integer $quality
      * @return string
+     * @throws FileNotFoundException
+     * @throws \Imagine\Exception\InvalidArgumentException
+     * @throws \Imagine\Exception\RuntimeException
+     * @throws \yii\base\InvalidParamException
      */
     public static function thumbnailFileUrl($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $quality = null)
     {
@@ -124,11 +139,12 @@ class EasyThumbnailImage
     /**
      * Creates and caches the image thumbnail and returns <img> tag.
      *
-     * @param string $filename
-     * @param integer $width
-     * @param integer $height
-     * @param string $mode
+     * @param string $filename the image file path or path alias
+     * @param integer $width the width in pixels to create the thumbnail
+     * @param integer $height the height in pixels to create the thumbnail
+     * @param string $mode self::THUMBNAIL_INSET, the original image
      * @param array $options options similarly with \yii\helpers\Html::img()
+     * @param integer $quality
      * @return string
      */
     public static function thumbnailImg($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $options = [], $quality = null)
@@ -149,13 +165,14 @@ class EasyThumbnailImage
     /**
      * Clear cache directory.
      *
+     * @throws \yii\base\InvalidParamException
      * @return bool
      */
     public static function clearCache()
     {
         $cacheDir = Yii::getAlias('@webroot/' . self::$cacheAlias);
         self::removeDir($cacheDir);
-        return @mkdir($cacheDir, 0755, true);
+        return @mkdir($cacheDir, self::MKDIR_MODE, true);
     }
 
     protected static function removeDir($path)
@@ -168,6 +185,11 @@ class EasyThumbnailImage
         }
     }
 
+    /**
+     * @param \Exception $error
+     * @param string $filename
+     * @return string
+     */
     protected static function errorHandler($error, $filename)
     {
         if ($error instanceof FileNotFoundException) {
@@ -177,5 +199,4 @@ class EasyThumbnailImage
             return 'Error ' . $error->getCode();
         }
     }
-
 }
