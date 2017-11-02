@@ -55,6 +55,19 @@ echo EasyThumbnailImage::thumbnailImg(
 );
 ```
 
+or
+
+```php
+use himiklab\thumbnail\EasyThumbnailImage;
+
+echo EasyThumbnailImage::thumbnailImg(
+    'http://...',
+    50,
+    50,
+    EasyThumbnailImage::THUMBNAIL_OUTBOUND,
+);
+```
+
 For other functions please see the source code.
 
 If you want to handle errors that appear while converting to thumbnail by yourself, please make your own class and inherit it from EasyThumbnailImage. In your class replace only protected method errorHandler. For example
