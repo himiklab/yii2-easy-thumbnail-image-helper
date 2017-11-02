@@ -258,7 +258,7 @@ class EasyThumbnailImage
             }
             stream_context_set_default($streamContextDefaults);
 
-            return $headers['Last-Modified'] ?? '';
+            return isset($headers['Last-Modified']) ? $headers['Last-Modified'] : '';
         }
 
         // curl

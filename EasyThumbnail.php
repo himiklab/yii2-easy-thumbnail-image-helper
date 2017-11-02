@@ -27,7 +27,7 @@ class EasyThumbnail extends Object
     public $cacheExpire = 0;
 
     /** @var integer */
-    public $grabberType = self::GRABBER_CURL;
+    public $grabberType = self::GRABBER_PHP;
 
     public function init()
     {
