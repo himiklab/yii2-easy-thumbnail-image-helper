@@ -7,7 +7,7 @@
 
 namespace himiklab\thumbnail;
 
-use yii\base\Object;
+use yii\base\BaseObject;
 
 /**
  * EasyThumbnailImage global configuration component.
@@ -15,7 +15,7 @@ use yii\base\Object;
  * @author HimikLab
  * @package himiklab\thumbnail
  */
-class EasyThumbnail extends Object
+class EasyThumbnail extends BaseObject
 {
     const GRABBER_PHP = 1;
     const GRABBER_CURL = 2;
