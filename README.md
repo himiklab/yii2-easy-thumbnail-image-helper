@@ -1,6 +1,8 @@
 Easy Thumbnail Image Helper for Yii2
 ========================
 
+[![Packagist](https://img.shields.io/packagist/dt/himiklab/yii2-easy-thumbnail-image-helper.svg)]() [![Packagist](https://img.shields.io/packagist/v/himiklab/yii2-easy-thumbnail-image-helper.svg)]()  [![license](https://img.shields.io/badge/License-MIT-yellow.svg)]()
+
 Yii2 helper for creating and caching thumbnails on real time.
 
 Installation
