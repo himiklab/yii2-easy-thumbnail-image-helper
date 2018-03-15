@@ -68,7 +68,7 @@ class EasyThumbnailImage
                                      $checkRemFileMode = self::CHECK_REM_MODE_NONE)
     {
         return Image::getImagine()
-            ->open(self::thumbnailFile($filename, $width, $height, $mode, $quality, $checkRemFileMode));
+            ->open(static::thumbnailFile($filename, $width, $height, $mode, $quality, $checkRemFileMode));
     }
 
     /**
@@ -97,10 +97,10 @@ class EasyThumbnailImage
             if ($checkRemFileMode === self::CHECK_REM_MODE_NONE) {
                 $thumbnailFileName = md5($filename . $width . $height . $mode);
             } elseif ($checkRemFileMode === self::CHECK_REM_MODE_CRC) {
-                $fileContent = self::fileFromUrlContent($filename);
+                $fileContent = static::fileFromUrlContent($filename);
                 $thumbnailFileName = md5($filename . $width . $height . $mode . crc32($fileContent));
             } elseif ($checkRemFileMode === self::CHECK_REM_MODE_HEADER) {
-                $thumbnailFileName = md5($filename . $width . $height . $mode . self::fileFromUrlDate($filename));
+                $thumbnailFileName = md5($filename . $width . $height . $mode . static::fileFromUrlDate($filename));
             } else {
                 throw new InvalidConfigException();
             }
@@ -111,14 +111,14 @@ class EasyThumbnailImage
             }
             $thumbnailFileName = md5($filename . $width . $height . $mode . filemtime($filename));
         }
-        $cachePath = Yii::getAlias('@webroot/' . self::$cacheAlias);
+        $cachePath = Yii::getAlias('@webroot/' . static::$cacheAlias);
 
         $thumbnailFileExt = strrchr($filename, '.');
         $thumbnailFilePath = $cachePath . DIRECTORY_SEPARATOR . substr($thumbnailFileName, 0, 2);
         $thumbnailFile = $thumbnailFilePath . DIRECTORY_SEPARATOR . $thumbnailFileName . $thumbnailFileExt;
 
         if (file_exists($thumbnailFile)) {
-            if (self::$cacheExpire !== 0 && (time() - filemtime($thumbnailFile)) > self::$cacheExpire) {
+            if (static::$cacheExpire !== 0 && (time() - filemtime($thumbnailFile)) > static::$cacheExpire) {
                 unlink($thumbnailFile);
             } else {
                 return $thumbnailFile;
@@ -130,7 +130,7 @@ class EasyThumbnailImage
 
         $box = new Box($width, $height);
         if ($fileNameIsUrl) {
-            $image = Image::getImagine()->load($fileContent ?: self::fileFromUrlContent($filename));
+            $image = Image::getImagine()->load($fileContent ?: static::fileFromUrlContent($filename));
         } else {
             $image = Image::getImagine()->open($filename);
         }
@@ -163,8 +163,8 @@ class EasyThumbnailImage
     public static function thumbnailFileUrl($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $quality = null,
                                             $checkRemFileMode = self::CHECK_REM_MODE_NONE)
     {
-        $cacheUrl = Yii::getAlias('@web/' . self::$cacheAlias);
-        $thumbnailFilePath = self::thumbnailFile($filename, $width, $height, $mode, $quality, $checkRemFileMode);
+        $cacheUrl = Yii::getAlias('@web/' . static::$cacheAlias);
+        $thumbnailFilePath = static::thumbnailFile($filename, $width, $height, $mode, $quality, $checkRemFileMode);
 
         preg_match('#[^\\' . DIRECTORY_SEPARATOR . ']+$#', $thumbnailFilePath, $matches);
         $fileName = $matches[0];
@@ -193,7 +193,7 @@ class EasyThumbnailImage
                                         $checkRemFileMode = self::CHECK_REM_MODE_NONE)
     {
         try {
-            $thumbnailFileUrl = self::thumbnailFileUrl($filename, $width, $height, $mode, $quality, $checkRemFileMode);
+            $thumbnailFileUrl = static::thumbnailFileUrl($filename, $width, $height, $mode, $quality, $checkRemFileMode);
         } catch (\Exception $e) {
             return static::errorHandler($e, $filename);
         }
@@ -212,8 +212,8 @@ class EasyThumbnailImage
      */
     public static function clearCache()
     {
-        $cacheDir = Yii::getAlias('@webroot/' . self::$cacheAlias);
-        self::removeDir($cacheDir);
+        $cacheDir = Yii::getAlias('@webroot/' . static::$cacheAlias);
+        static::removeDir($cacheDir);
         return @mkdir($cacheDir, self::MKDIR_MODE, true);
     }
 
@@ -249,7 +249,7 @@ class EasyThumbnailImage
      */
     protected static function fileFromUrlDate($url)
     {
-        if (self::$grabberType === EasyThumbnail::GRABBER_PHP) {
+        if (static::$grabberType === EasyThumbnail::GRABBER_PHP) {
             $streamContextDefaults = stream_context_get_options(stream_context_get_default());
             stream_context_set_default(['http' => ['method' => 'HEAD']]);
             if (($headers = @get_headers($url, 1)) === false || strpos($headers[0], '200') === false) {
@@ -281,7 +281,7 @@ class EasyThumbnailImage
      */
     protected static function fileFromUrlContent($url)
     {
-        if (self::$grabberType === EasyThumbnail::GRABBER_PHP) {
+        if (static::$grabberType === EasyThumbnail::GRABBER_PHP) {
             if (($result = @file_get_contents($url)) === false) {
                 throw new FileNotFoundException("URL {$url} doesn't exist");
             }
