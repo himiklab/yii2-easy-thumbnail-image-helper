@@ -13,6 +13,7 @@ use Yii;
 use yii\base\InvalidConfigException;
 use yii\helpers\FileHelper;
 use yii\helpers\Html;
+use yii\httpclient\Client;
 use yii\imagine\Image;
 
 /**
@@ -36,8 +37,6 @@ class EasyThumbnailImage
 
     /** @var int $cacheExpire */
     public static $cacheExpire = 0;
-
-    public static $grabberType = EasyThumbnail::GRABBER_PHP;
 
     /**
      * Creates and caches the image thumbnail and returns ImageInterface.
@@ -248,29 +247,14 @@ class EasyThumbnailImage
      */
     protected static function fileFromUrlDate($url)
     {
-        if (static::$grabberType === EasyThumbnail::GRABBER_PHP) {
-            $streamContextDefaults = stream_context_get_options(stream_context_get_default());
-            stream_context_set_default(['http' => ['method' => 'HEAD']]);
-            if (($headers = @get_headers($url, 1)) === false || strpos($headers[0], '200') === false) {
-                stream_context_set_default($streamContextDefaults);
-                throw new FileNotFoundException("URL {$url} doesn't exist");
-            }
-            stream_context_set_default($streamContextDefaults);
-
-            return isset($headers['Last-Modified']) ? $headers['Last-Modified'] : '';
-        }
-
-        // curl
-        $curl = curl_init($url);
-        curl_setopt_array($curl, [
-            CURLOPT_FILETIME => true,
-            CURLOPT_NOBODY => true,
-        ]);
-        if (curl_exec($curl) === false) {
+        $response = (new Client())
+            ->head($url)
+            ->send();
+        if (!$response->isOk) {
             throw new FileNotFoundException("URL {$url} doesn't exist");
         }
 
-        return curl_getinfo($curl, CURLINFO_FILETIME);
+        return $response->headers['Last-Modified'];
     }
 
     /**
@@ -280,23 +264,15 @@ class EasyThumbnailImage
      */
     protected static function fileFromUrlContent($url)
     {
-        if (static::$grabberType === EasyThumbnail::GRABBER_PHP) {
-            if (($result = @file_get_contents($url)) === false) {
-                throw new FileNotFoundException("URL {$url} doesn't exist");
-            }
-
-            return $result;
-        }
-
-        // curl
-        $curl = curl_init($url);
-        curl_setopt_array($curl, [
-            CURLOPT_RETURNTRANSFER => true,
-        ]);
-        if (!($result = curl_exec($curl))) {
+        $response = (new Client())
+            ->createRequest()
+            ->setMethod('GET')
+            ->setUrl($url)
+            ->send();
+        if (!$response->isOk) {
             throw new FileNotFoundException("URL {$url} doesn't exist");
         }
 
-        return $result;
+        return $response->content;
     }
 }
