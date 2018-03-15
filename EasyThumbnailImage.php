@@ -1,7 +1,7 @@
 <?php
 /**
  * @link https://github.com/himiklab/yii2-easy-thumbnail-image-helper
- * @copyright Copyright (c) 2014-2017 HimikLab
+ * @copyright Copyright (c) 2014-2018 HimikLab
  * @license http://opensource.org/licenses/MIT MIT
  */
 
@@ -183,7 +183,6 @@ class EasyThumbnailImage
      * @param integer $quality
      * @param integer $checkRemFileMode
      * @return string
-     * @throws FileNotFoundException
      * @throws \Imagine\Exception\InvalidArgumentException
      * @throws \Imagine\Exception\RuntimeException
      * @throws \yii\base\InvalidParamException
