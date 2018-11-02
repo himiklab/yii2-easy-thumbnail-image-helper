@@ -22,7 +22,7 @@ or add
 
 to the require section of your application's `composer.json` file.
 
-* Add a new component in `components` section of your application's configuration file (optional), for example:
+* Add a new component in `components` section of your application's configuration file, for example:
 
 ```php
 'components' => [

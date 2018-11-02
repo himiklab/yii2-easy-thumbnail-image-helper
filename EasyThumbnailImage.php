@@ -12,6 +12,7 @@ use Yii;
 use yii\base\InvalidConfigException;
 use yii\helpers\FileHelper;
 use yii\helpers\Html;
+use yii\httpclient\Client as HttpClient;
 use yii\imagine\Image;
 
 /**
@@ -245,7 +246,7 @@ class EasyThumbnailImage
      */
     protected static function fileFromUrlDate($url)
     {
-        $response = self::$httpClient
+        $response = self::getHttpClient()
             ->head($url)
             ->send();
         if (!$response->isOk) {
@@ -264,7 +265,7 @@ class EasyThumbnailImage
      */
     protected static function fileFromUrlContent($url)
     {
-        $response = self::$httpClient
+        $response = self::getHttpClient()
             ->createRequest()
             ->setMethod('GET')
             ->setUrl($url)
@@ -274,5 +275,17 @@ class EasyThumbnailImage
         }
 
         return $response->content;
+    }
+
+    /**
+     * @return HttpClient
+     */
+    protected static function getHttpClient()
+    {
+        if (self::$httpClient === null || !(self::$httpClient instanceof HttpClient)) {
+            self::$httpClient = new HttpClient();
+        }
+
+        return self::$httpClient;
     }
 }
