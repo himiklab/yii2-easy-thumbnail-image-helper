@@ -207,24 +207,14 @@ class EasyThumbnailImage
     /**
      * Clear cache directory.
      *
-     * @throws \yii\base\InvalidParamException
      * @return bool
+     * @throws \yii\base\ErrorException
      */
     public static function clearCache()
     {
         $cacheDir = Yii::getAlias('@webroot/' . static::$cacheAlias);
-        static::removeDir($cacheDir);
+        FileHelper::removeDirectory($cacheDir);
         return @mkdir($cacheDir, self::MKDIR_MODE, true);
-    }
-
-    protected static function removeDir($path)
-    {
-        if (is_file($path)) {
-            @unlink($path);
-        } else {
-            array_map('self::removeDir', glob($path . DIRECTORY_SEPARATOR . '*'));
-            @rmdir($path);
-        }
     }
 
     /**
