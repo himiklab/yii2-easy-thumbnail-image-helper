@@ -57,12 +57,10 @@ class EasyThumbnailImage
      * corresponding side in the original image. Any excess outside of the scaled
      * thumbnail’s area will be cropped, and the returned thumbnail will have
      * the exact $width and $height specified
-     * @throws \Imagine\Exception\RuntimeException
-     * @throws \Imagine\Exception\InvalidArgumentException
-     * @throws FileNotFoundException
      * @return \Imagine\Image\ImageInterface
-     * @throws \yii\base\InvalidParamException
-     * @throws \yii\base\InvalidConfigException
+     * @throws FileNotFoundException
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
     public static function thumbnail($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $quality = null,
                                      $checkRemFileMode = self::CHECK_REM_MODE_NONE)
@@ -82,50 +80,55 @@ class EasyThumbnailImage
      * @param integer $checkRemFileMode
      * @return string
      * @throws FileNotFoundException
-     * @throws \Imagine\Exception\InvalidArgumentException
-     * @throws \Imagine\Exception\RuntimeException
-     * @throws \yii\base\InvalidParamException
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
     public static function thumbnailFile($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $quality = null,
                                          $checkRemFileMode = self::CHECK_REM_MODE_NONE)
     {
         $fileContent = null;
         $fileNameIsUrl = false;
-        if (preg_match('/^https?:\/\//', $filename)) {
+        if (\preg_match('/^https?:\/\//', $filename)) {
             $fileNameIsUrl = true;
-            if ($checkRemFileMode === self::CHECK_REM_MODE_NONE) {
-                $thumbnailFileName = md5($filename . $width . $height . $mode);
-            } elseif ($checkRemFileMode === self::CHECK_REM_MODE_CRC) {
-                $fileContent = static::fileFromUrlContent($filename);
-                $thumbnailFileName = md5($filename . $width . $height . $mode . crc32($fileContent));
-            } elseif ($checkRemFileMode === self::CHECK_REM_MODE_HEADER) {
-                $thumbnailFileName = md5($filename . $width . $height . $mode . static::fileFromUrlDate($filename));
-            } else {
-                throw new InvalidConfigException();
+            switch ($checkRemFileMode) {
+                case self::CHECK_REM_MODE_NONE:
+                    $thumbnailFileName = \md5($filename . $width . $height . $mode);
+                    break;
+                case self::CHECK_REM_MODE_CRC:
+                    $fileContent = static::fileFromUrlContent($filename);
+                    $thumbnailFileName = \md5($filename . $width . $height . $mode . \crc32($fileContent));
+                    break;
+                case self::CHECK_REM_MODE_HEADER:
+                    $fileContent = static::fileFromUrlContent($filename);
+                    $thumbnailFileName = \md5(
+                        $filename . $width . $height . $mode . static::fileFromUrlDate($filename)
+                    );
+                    break;
+                default:
+                    throw new InvalidConfigException('Unknown `checkRemFileMode` param value.');
             }
         } else {
             $filename = FileHelper::normalizePath(Yii::getAlias($filename));
-            if (!is_file($filename)) {
+            if (!\is_file($filename)) {
                 throw new FileNotFoundException("File {$filename} doesn't exist");
             }
-            $thumbnailFileName = md5($filename . $width . $height . $mode . filemtime($filename));
+            $thumbnailFileName = \md5($filename . $width . $height . $mode . \filemtime($filename));
         }
         $cachePath = Yii::getAlias('@webroot/' . static::$cacheAlias);
 
-        $thumbnailFileExt = strrchr($filename, '.');
-        $thumbnailFilePath = $cachePath . DIRECTORY_SEPARATOR . substr($thumbnailFileName, 0, 2);
+        $thumbnailFileExt = \strrchr($filename, '.');
+        $thumbnailFilePath = $cachePath . DIRECTORY_SEPARATOR . \substr($thumbnailFileName, 0, 2);
         $thumbnailFile = $thumbnailFilePath . DIRECTORY_SEPARATOR . $thumbnailFileName . $thumbnailFileExt;
 
-        if (file_exists($thumbnailFile)) {
-            if (static::$cacheExpire !== 0 && (time() - filemtime($thumbnailFile)) > static::$cacheExpire) {
-                unlink($thumbnailFile);
+        if (\file_exists($thumbnailFile)) {
+            if (static::$cacheExpire !== 0 && (\time() - \filemtime($thumbnailFile)) > static::$cacheExpire) {
+                \unlink($thumbnailFile);
             } else {
                 return $thumbnailFile;
             }
         }
-        if (!is_dir($thumbnailFilePath)) {
-            mkdir($thumbnailFilePath, self::MKDIR_MODE, true);
+        if (!\is_dir($thumbnailFilePath)) {
+            \mkdir($thumbnailFilePath, self::MKDIR_MODE, true);
         }
 
         if ($fileNameIsUrl) {
@@ -154,21 +157,19 @@ class EasyThumbnailImage
      * @param integer $checkRemFileMode
      * @return string
      * @throws FileNotFoundException
-     * @throws \Imagine\Exception\InvalidArgumentException
-     * @throws \Imagine\Exception\RuntimeException
-     * @throws \yii\base\InvalidParamException
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
-    public static function thumbnailFileUrl($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $quality = null,
-                                            $checkRemFileMode = self::CHECK_REM_MODE_NONE)
+    public static function thumbnailFileUrl($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND,
+                                            $quality = null, $checkRemFileMode = self::CHECK_REM_MODE_NONE)
     {
         $cacheUrl = Yii::getAlias('@web/' . static::$cacheAlias);
         $thumbnailFilePath = static::thumbnailFile($filename, $width, $height, $mode, $quality, $checkRemFileMode);
 
-        preg_match('#[^\\' . DIRECTORY_SEPARATOR . ']+$#', $thumbnailFilePath, $matches);
+        \preg_match('#[^\\' . DIRECTORY_SEPARATOR . ']+$#', $thumbnailFilePath, $matches);
         $fileName = $matches[0];
 
-        return $cacheUrl . '/' . substr($fileName, 0, 2) . '/' . $fileName;
+        return $cacheUrl . '/' . \substr($fileName, 0, 2) . '/' . $fileName;
     }
 
     /**
@@ -185,13 +186,19 @@ class EasyThumbnailImage
      * @throws \Imagine\Exception\InvalidArgumentException
      * @throws \Imagine\Exception\RuntimeException
      * @throws \yii\base\InvalidParamException
-     * @throws \yii\base\InvalidConfigException
      */
-    public static function thumbnailImg($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $options = [], $quality = null,
-                                        $checkRemFileMode = self::CHECK_REM_MODE_NONE)
+    public static function thumbnailImg($filename, $width, $height, $mode = self::THUMBNAIL_OUTBOUND, $options = [],
+                                        $quality = null, $checkRemFileMode = self::CHECK_REM_MODE_NONE)
     {
         try {
-            $thumbnailFileUrl = static::thumbnailFileUrl($filename, $width, $height, $mode, $quality, $checkRemFileMode);
+            $thumbnailFileUrl = static::thumbnailFileUrl(
+                $filename,
+                $width,
+                $height,
+                $mode,
+                $quality,
+                $checkRemFileMode
+            );
         } catch (\Exception $e) {
             return static::errorHandler($e, $filename);
         }
@@ -212,7 +219,7 @@ class EasyThumbnailImage
     {
         $cacheDir = Yii::getAlias('@webroot/' . static::$cacheAlias);
         FileHelper::removeDirectory($cacheDir);
-        return @mkdir($cacheDir, self::MKDIR_MODE, true);
+        return @\mkdir($cacheDir, self::MKDIR_MODE, true);
     }
 
     /**
@@ -234,6 +241,7 @@ class EasyThumbnailImage
      * @param string $url
      * @return string
      * @throws FileNotFoundException
+     * @throws \yii\httpclient\Exception
      */
     protected static function fileFromUrlDate($url)
     {
@@ -251,6 +259,8 @@ class EasyThumbnailImage
      * @param string $url
      * @return string
      * @throws FileNotFoundException
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
     protected static function fileFromUrlContent($url)
     {
