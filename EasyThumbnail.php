@@ -8,7 +8,6 @@
 namespace himiklab\thumbnail;
 
 use yii\base\BaseObject;
-use yii\httpclient\Client as HttpClient;
 
 /**
  * EasyThumbnailImage global configuration component.
@@ -24,17 +23,13 @@ class EasyThumbnail extends BaseObject
     /** @var integer $cacheExpire seconds */
     public $cacheExpire = 0;
 
-    /** @var HttpClient */
+    /** @var \yii\httpclient\Client */
     public $httpClient;
 
     public function init()
     {
         EasyThumbnailImage::$cacheAlias = $this->cacheAlias;
         EasyThumbnailImage::$cacheExpire = $this->cacheExpire;
-
         EasyThumbnailImage::$httpClient = $this->httpClient;
-        if (EasyThumbnailImage::$httpClient === null || !(EasyThumbnailImage::$httpClient instanceof HttpClient)) {
-            EasyThumbnailImage::$httpClient = new HttpClient();
-        }
     }
 }
