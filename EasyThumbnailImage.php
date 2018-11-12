@@ -7,6 +7,7 @@
 
 namespace himiklab\thumbnail;
 
+use Imagine\Image\Box;
 use Imagine\Image\ManipulatorInterface;
 use Yii;
 use yii\base\InvalidConfigException;
@@ -24,6 +25,7 @@ class EasyThumbnailImage
 {
     const THUMBNAIL_OUTBOUND = ManipulatorInterface::THUMBNAIL_OUTBOUND;
     const THUMBNAIL_INSET = ManipulatorInterface::THUMBNAIL_INSET;
+    const THUMBNAIL_INSET_BOX = 'inset_box';
     const QUALITY = 50;
     const MKDIR_MODE = 0755;
 
@@ -58,6 +60,11 @@ class EasyThumbnailImage
      * contained within the thumbnail dimensions. The rest is filled with background that could be configured via
      * [[Image::$thumbnailBackgroundColor]] or [[EasyThumbnail::$thumbnailBackgroundColor]],
      * and [[Image::$thumbnailBackgroundAlpha]] or [[EasyThumbnail::$thumbnailBackgroundAlpha]].
+     *
+     * If thumbnail mode is `self::THUMBNAIL_INSET_BOX`, the original image is scaled down so it is fully contained
+     * within the thumbnail dimensions. The specified $width and $height (supplied via $size) will be considered
+     * maximum limits. Unless the given dimensions are equal to the original image’s aspect ratio, one dimension in the
+     * resulting thumbnail will be smaller than the given limit.
      *
      * @param string $filename the image file path or path alias or URL
      * @param integer $width the width in pixels to create the thumbnail
@@ -95,6 +102,11 @@ class EasyThumbnailImage
      * contained within the thumbnail dimensions. The rest is filled with background that could be configured via
      * [[Image::$thumbnailBackgroundColor]] or [[EasyThumbnail::$thumbnailBackgroundColor]],
      * and [[Image::$thumbnailBackgroundAlpha]] or [[EasyThumbnail::$thumbnailBackgroundAlpha]].
+     *
+     * If thumbnail mode is `self::THUMBNAIL_INSET_BOX`, the original image is scaled down so it is fully contained
+     * within the thumbnail dimensions. The specified $width and $height (supplied via $size) will be considered
+     * maximum limits. Unless the given dimensions are equal to the original image’s aspect ratio, one dimension in the
+     * resulting thumbnail will be smaller than the given limit.
      *
      * @param string $filename the image file path or path alias or URL
      * @param integer $width the width in pixels to create the thumbnail
@@ -160,7 +172,11 @@ class EasyThumbnailImage
         } else {
             $image = Image::getImagine()->open($filename);
         }
-        $image = Image::thumbnail($image, $width, $height, $mode);
+        if ($mode === self::THUMBNAIL_INSET_BOX) {
+            $image = $image->thumbnail(new Box($width, $height), ManipulatorInterface::THUMBNAIL_INSET);
+        } else {
+            $image = Image::thumbnail($image, $width, $height, $mode);
+        }
 
         $options = [
             'quality' => $quality === null ? self::QUALITY : $quality
@@ -188,6 +204,11 @@ class EasyThumbnailImage
      * contained within the thumbnail dimensions. The rest is filled with background that could be configured via
      * [[Image::$thumbnailBackgroundColor]] or [[EasyThumbnail::$thumbnailBackgroundColor]],
      * and [[Image::$thumbnailBackgroundAlpha]] or [[EasyThumbnail::$thumbnailBackgroundAlpha]].
+     *
+     * If thumbnail mode is `self::THUMBNAIL_INSET_BOX`, the original image is scaled down so it is fully contained
+     * within the thumbnail dimensions. The specified $width and $height (supplied via $size) will be considered
+     * maximum limits. Unless the given dimensions are equal to the original image’s aspect ratio, one dimension in the
+     * resulting thumbnail will be smaller than the given limit.
      *
      * @param string $filename the image file path or path alias or URL
      * @param integer $width the width in pixels to create the thumbnail
