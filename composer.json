@@ -16,7 +16,7 @@
   ],
   "require": {
     "yiisoft/yii2": "~2.0.13",
-    "yiisoft/yii2-imagine": "~2.0.4",
+    "yiisoft/yii2-imagine": ">=2.0.4",
     "yiisoft/yii2-httpclient": "*"
   },
   "autoload": {
