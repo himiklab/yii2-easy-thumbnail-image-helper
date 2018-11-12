@@ -8,6 +8,7 @@
 namespace himiklab\thumbnail;
 
 use yii\base\BaseObject;
+use yii\imagine\Image;
 
 /**
  * EasyThumbnailImage global configuration component.
@@ -26,10 +27,29 @@ class EasyThumbnail extends BaseObject
     /** @var \yii\httpclient\Client */
     public $httpClient;
 
+    /**
+     * @var string
+     * @see \yii\imagine\Image::$thumbnailBackgroundColor
+     */
+    public $thumbnailBackgroundColor;
+
+    /**
+     * @var string
+     * @see \yii\imagine\Image::$thumbnailBackgroundAlpha
+     */
+    public $thumbnailBackgroundAlpha;
+
     public function init()
     {
         EasyThumbnailImage::$cacheAlias = $this->cacheAlias;
         EasyThumbnailImage::$cacheExpire = $this->cacheExpire;
         EasyThumbnailImage::$httpClient = $this->httpClient;
+
+        if ($this->thumbnailBackgroundColor) {
+            Image::$thumbnailBackgroundColor = $this->thumbnailBackgroundColor;
+        }
+        if ($this->thumbnailBackgroundAlpha) {
+            Image::$thumbnailBackgroundAlpha = $this->thumbnailBackgroundAlpha;
+        }
     }
 }

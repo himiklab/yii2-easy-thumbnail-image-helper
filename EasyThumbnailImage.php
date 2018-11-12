@@ -41,23 +41,30 @@ class EasyThumbnailImage
     public static $httpClient;
 
     /**
-     * Creates and caches the image thumbnail and returns ImageInterface.
+     * Creates and caches the image thumbnail and returns `ImageInterface`.
+     *
+     * If one of thumbnail dimensions is set to `null`, another one is calculated automatically based on aspect ratio of
+     * original image. Note that calculated thumbnail dimension may vary depending on the source image in this case.
+     *
+     * If both dimensions are specified, resulting thumbnail would be exactly the width and height specified. How it's
+     * achieved depends on the mode.
+     *
+     * If `self::THUMBNAIL_OUTBOUND` mode is used, which is default, then the thumbnail is scaled so that
+     * its smallest side equals the length of the corresponding side in the original image. Any excess outside of
+     * the scaled thumbnail’s area will be cropped, and the returned thumbnail will have the exact width and height
+     * specified.
+     *
+     * If thumbnail mode is `self::THUMBNAIL_INSET`, the original image is scaled down so it is fully
+     * contained within the thumbnail dimensions. The rest is filled with background that could be configured via
+     * [[Image::$thumbnailBackgroundColor]] or [[EasyThumbnail::$thumbnailBackgroundColor]],
+     * and [[Image::$thumbnailBackgroundAlpha]] or [[EasyThumbnail::$thumbnailBackgroundAlpha]].
      *
      * @param string $filename the image file path or path alias or URL
      * @param integer $width the width in pixels to create the thumbnail
      * @param integer $height the height in pixels to create the thumbnail
-     * @param string $mode self::THUMBNAIL_INSET, the original image
+     * @param string $mode mode of resizing original image to use in case both width and height specified
      * @param integer $quality
-     * @param integer $checkRemFileMode
-     * is scaled down so it is fully contained within the thumbnail dimensions.
-     * The specified $width and $height (supplied via $size) will be considered
-     * maximum limits. Unless the given dimensions are equal to the original image’s
-     * aspect ratio, one dimension in the resulting thumbnail will be smaller than
-     * the given limit. If self::THUMBNAIL_OUTBOUND mode is chosen, then
-     * the thumbnail is scaled so that its smallest side equals the length of the
-     * corresponding side in the original image. Any excess outside of the scaled
-     * thumbnail’s area will be cropped, and the returned thumbnail will have
-     * the exact $width and $height specified
+     * @param integer $checkRemFileMode check file version on remote server
      * @return \Imagine\Image\ImageInterface
      * @throws FileNotFoundException
      * @throws InvalidConfigException
@@ -73,12 +80,28 @@ class EasyThumbnailImage
     /**
      * Creates and caches the image thumbnail and returns full path from thumbnail file.
      *
+     * If one of thumbnail dimensions is set to `null`, another one is calculated automatically based on aspect ratio of
+     * original image. Note that calculated thumbnail dimension may vary depending on the source image in this case.
+     *
+     * If both dimensions are specified, resulting thumbnail would be exactly the width and height specified. How it's
+     * achieved depends on the mode.
+     *
+     * If `self::THUMBNAIL_OUTBOUND` mode is used, which is default, then the thumbnail is scaled so that
+     * its smallest side equals the length of the corresponding side in the original image. Any excess outside of
+     * the scaled thumbnail’s area will be cropped, and the returned thumbnail will have the exact width and height
+     * specified.
+     *
+     * If thumbnail mode is `self::THUMBNAIL_INSET`, the original image is scaled down so it is fully
+     * contained within the thumbnail dimensions. The rest is filled with background that could be configured via
+     * [[Image::$thumbnailBackgroundColor]] or [[EasyThumbnail::$thumbnailBackgroundColor]],
+     * and [[Image::$thumbnailBackgroundAlpha]] or [[EasyThumbnail::$thumbnailBackgroundAlpha]].
+     *
      * @param string $filename the image file path or path alias or URL
      * @param integer $width the width in pixels to create the thumbnail
      * @param integer $height the height in pixels to create the thumbnail
-     * @param string $mode self::THUMBNAIL_INSET, the original image
+     * @param string $mode mode of resizing original image to use in case both width and height specified
      * @param integer $quality
-     * @param integer $checkRemFileMode
+     * @param integer $checkRemFileMode check file version on remote server
      * @return string
      * @throws FileNotFoundException
      * @throws InvalidConfigException
@@ -150,12 +173,28 @@ class EasyThumbnailImage
     /**
      * Creates and caches the image thumbnail and returns URL from thumbnail file.
      *
+     * If one of thumbnail dimensions is set to `null`, another one is calculated automatically based on aspect ratio of
+     * original image. Note that calculated thumbnail dimension may vary depending on the source image in this case.
+     *
+     * If both dimensions are specified, resulting thumbnail would be exactly the width and height specified. How it's
+     * achieved depends on the mode.
+     *
+     * If `self::THUMBNAIL_OUTBOUND` mode is used, which is default, then the thumbnail is scaled so that
+     * its smallest side equals the length of the corresponding side in the original image. Any excess outside of
+     * the scaled thumbnail’s area will be cropped, and the returned thumbnail will have the exact width and height
+     * specified.
+     *
+     * If thumbnail mode is `self::THUMBNAIL_INSET`, the original image is scaled down so it is fully
+     * contained within the thumbnail dimensions. The rest is filled with background that could be configured via
+     * [[Image::$thumbnailBackgroundColor]] or [[EasyThumbnail::$thumbnailBackgroundColor]],
+     * and [[Image::$thumbnailBackgroundAlpha]] or [[EasyThumbnail::$thumbnailBackgroundAlpha]].
+     *
      * @param string $filename the image file path or path alias or URL
      * @param integer $width the width in pixels to create the thumbnail
      * @param integer $height the height in pixels to create the thumbnail
-     * @param string $mode self::THUMBNAIL_INSET, the original image
+     * @param string $mode mode of resizing original image to use in case both width and height specified
      * @param integer $quality
-     * @param integer $checkRemFileMode
+     * @param integer $checkRemFileMode check file version on remote server
      * @return string
      * @throws FileNotFoundException
      * @throws InvalidConfigException
@@ -176,13 +215,28 @@ class EasyThumbnailImage
     /**
      * Creates and caches the image thumbnail and returns <img> tag.
      *
+     * If one of thumbnail dimensions is set to `null`, another one is calculated automatically based on aspect ratio of
+     * original image. Note that calculated thumbnail dimension may vary depending on the source image in this case.
+     *
+     * If both dimensions are specified, resulting thumbnail would be exactly the width and height specified. How it's
+     * achieved depends on the mode.
+     *
+     * If `self::THUMBNAIL_OUTBOUND` mode is used, which is default, then the thumbnail is scaled so that
+     * its smallest side equals the length of the corresponding side in the original image. Any excess outside of
+     * the scaled thumbnail’s area will be cropped, and the returned thumbnail will have the exact width and height
+     * specified.
+     *
+     * If thumbnail mode is `self::THUMBNAIL_INSET`, the original image is scaled down so it is fully
+     * contained within the thumbnail dimensions. The rest is filled with background that could be configured via
+     * [[Image::$thumbnailBackgroundColor]] or [[EasyThumbnail::$thumbnailBackgroundColor]],
+     * and [[Image::$thumbnailBackgroundAlpha]] or [[EasyThumbnail::$thumbnailBackgroundAlpha]].
+     *
      * @param string $filename the image file path or path alias or URL
      * @param integer $width the width in pixels to create the thumbnail
      * @param integer $height the height in pixels to create the thumbnail
-     * @param string $mode self::THUMBNAIL_INSET, the original image
-     * @param array $options options similarly with \yii\helpers\Html::img()
+     * @param string $mode mode of resizing original image to use in case both width and height specified
      * @param integer $quality
-     * @param integer $checkRemFileMode
+     * @param integer $checkRemFileMode check file version on remote server
      * @return string
      * @throws \Imagine\Exception\InvalidArgumentException
      * @throws \Imagine\Exception\RuntimeException
